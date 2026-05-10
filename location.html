@@ -20,6 +20,12 @@
         align-items: center;
       }
 
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
       .church-title { color: #ffffff; font-size: 20px; font-weight: 700; }
       .church-title span {
         display: block; font-size: 11px;
@@ -70,9 +76,12 @@
   <body>
 
     <header>
-      <div class="church-title">
-        필그림소망교회
-        <span>Pilgrim Somang Church</span>
+      <div class="header-left">
+        <img src="logo.svg" alt="대한예수교장로회 합동" height="50">
+        <div class="church-title">
+          필그림소망교회
+          <span>Pilgrim Somang Church</span>
+        </div>
       </div>
       <nav>
         <a href="index.html">예배 안내</a>
