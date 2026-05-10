@@ -42,7 +42,7 @@
         max-width: 700px;
         margin: 40px auto;
         background-color: #ffffff;
-        padding: 50px;
+        padding: 40px 50px;
         border-radius: 8px;
       }
 
@@ -50,61 +50,60 @@
         font-size: 18px; color: #2c3e6b;
         border-left: 4px solid #2c3e6b;
         padding-left: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 24px;
       }
 
-      p { font-size: 15px; line-height: 1.8; color: #555555; margin: 4px 0; }
-
-      .contact-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px 0;
-        border-bottom: 1px solid #f0ece4;
+      .info-table {
+        width: 100%;
+        border-collapse: collapse;
       }
 
-      .contact-label {
-        font-size: 13px;
-        color: #888;
-        width: 80px;
-        flex-shrink: 0;
-      }
-
-      .contact-value {
+      .info-table tr td {
+        padding: 12px 0;
         font-size: 15px;
-        color: #333;
+        color: #555;
+        border-bottom: 1px solid #f0ece4;
+        vertical-align: middle;
       }
 
-      .contact-value a {
-        color: #2c3e6b;
+      .info-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .info-table td.label {
+        color: #999;
+        font-size: 13px;
+        width: 90px;
+      }
+
+      .info-table a {
+        color: #555;
         text-decoration: none;
       }
 
-      .contact-value a:hover {
+      .info-table a:hover {
         text-decoration: underline;
       }
 
-      .youtube-btn {
-        color: #c00;
-        text-decoration: none;
-        font-size: 15px;
+      .youtube-link {
+        color: #c00 !important;
       }
 
-      .youtube-btn:hover { text-decoration: underline; }
-
-      .bug-section {
-        margin-top: 32px;
-        padding-top: 24px;
+      .bug-report {
+        margin-top: 28px;
+        padding-top: 20px;
         border-top: 1px solid #eee;
-      }
-
-      .bug-section p {
         font-size: 13px;
-        color: #aaa;
+        color: #bbb;
       }
 
-      .bug-section a {
-        color: #aaa;
+      .bug-report a {
+        color: #bbb;
+        text-decoration: none;
+      }
+
+      .bug-report a:hover {
+        text-decoration: underline;
       }
 
       footer {
@@ -140,22 +139,28 @@
     <main>
       <h2>문의</h2>
 
-      <div class="contact-item">
-        <span class="contact-label">전화</span>
-        <span class="contact-value">
-          <a href="tel:0312860691">(031) 286-0691</a>
-        </span>
-      </div>
+      <table class="info-table">
+        <tr>
+          <td class="label">전화</td>
+          <td><a href="tel:0312860691">(031) 286-0691</a></td>
+        </tr>
+        <tr>
+          <td class="label">운영시간</td>
+          <td>월 — 일 &nbsp; 오전 10:00 ~ 오후 5:00</td>
+        </tr>
+        <tr>
+          <td class="label">유튜브</td>
+          <td>
+            <a href="https://www.youtube.com/@필그림소망교회" target="_blank" class="youtube-link">
+              ▶ 필그림소망교회 유튜브
+            </a>
+          </td>
+        </tr>
+      </table>
 
-      <div class="contact-item">
-        <span class="contact-label">유튜브</span>
-        <span class="contact-value">
-          <a href="https://www.youtube.com/@필그림소망교회" target="_blank" class="youtube-btn">▶ 필그림소망교회 유튜브</a>
-        </span>
-      </div>
-
-      <div class="bug-section">
-        <p>홈페이지 버그 제보 : <a href="mailto:helloshr09@gmail.com">helloshr09@gmail.com</a></p>
+      <div class="bug-report">
+        홈페이지 버그 제보 &nbsp;·&nbsp;
+        <a href="mailto:helloshr09@gmail.com">helloshr09@gmail.com</a>
       </div>
     </main>
 
