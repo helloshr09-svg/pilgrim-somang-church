@@ -43,7 +43,7 @@
         background-color: #1a2a50;
         color: #ffffff;
         text-align: center;
-        padding: 40px 20px;
+        padding: 60px 20px;
       }
       .banner h1 { font-size: 32px; margin-bottom: 12px; }
       .banner p { font-size: 16px; color: #aabbdd; }
@@ -134,13 +134,33 @@
       @media (max-width: 600px) {
         header {
           padding: 12px 20px;
-          flex-direction: column;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+          gap: 6px;
+          text-align: left;
+        }
+
+        .header-left {
           gap: 10px;
-          text-align: center;
+        }
+
+        .church-title {
+          font-size: 16px;
+        }
+
+        nav {
+          width: 100%;
+          display: flex;
+          justify-content: space-around;
+          border-top: 1px solid #3a5080;
+          padding-top: 10px;
+          margin-top: 4px;
         }
 
         nav a {
-          margin-left: 14px;
+          margin-left: 0;
           font-size: 13px;
         }
 
