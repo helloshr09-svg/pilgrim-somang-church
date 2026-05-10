@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>필그림소망교회</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -128,6 +129,35 @@
       }
 
       .acc-content.open { display: block; }
+
+      /* 모바일 */
+      @media (max-width: 600px) {
+        header {
+          padding: 12px 20px;
+          flex-direction: column;
+          gap: 10px;
+          text-align: center;
+        }
+
+        nav a {
+          margin-left: 14px;
+          font-size: 13px;
+        }
+
+        .banner h1 { font-size: 24px; }
+        .banner p { font-size: 14px; }
+
+        main {
+          margin: 20px 16px;
+          padding: 30px 24px;
+        }
+
+        h2 { font-size: 16px; }
+        p { font-size: 14px; }
+        ul { font-size: 14px; }
+
+        .acc-btn { font-size: 14px; }
+      }
     </style>
   </head>
 
