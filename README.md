@@ -1,2 +1,2 @@
 # pilgrim-somang-church
-교회 홈페이지 제작
+필그림 소망교회 홈페이지
