@@ -66,6 +66,21 @@
 
       ul { padding-left: 20px; color: #555555; font-size: 15px; line-height: 2; }
 
+      /* 문의 버튼 */
+      .contact-btn {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 20px;
+        background-color: #2c3e6b;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 13px;
+        border-radius: 4px;
+      }
+      .contact-btn:hover {
+        background-color: #1a2a50;
+      }
+
       footer {
         background-color: #2c3e6b;
         color: #e8eef8;
@@ -75,18 +90,12 @@
         line-height: 2;
       }
 
-      footer p {
-        color: #e8eef8;
-      }
+      footer p { color: #e8eef8; }
 
       /* 아코디언 */
-      .accordion {
-        margin-top: 8px;
-      }
+      .accordion { margin-top: 8px; }
 
-      .acc-item {
-        border-bottom: 1px solid #e8e0d4;
-      }
+      .acc-item { border-bottom: 1px solid #e8e0d4; }
 
       .acc-btn {
         width: 100%;
@@ -111,18 +120,14 @@
         font-size: 13px;
       }
 
-      .acc-btn.open span {
-        transform: rotate(180deg);
-      }
+      .acc-btn.open span { transform: rotate(180deg); }
 
       .acc-content {
         display: none;
         padding: 4px 0 14px 8px;
       }
 
-      .acc-content.open {
-        display: block;
-      }
+      .acc-content.open { display: block; }
     </style>
   </head>
 
@@ -139,7 +144,7 @@
       <nav>
         <a href="index.html">예배 안내</a>
         <a href="location.html">오시는 길</a>
-        <a href="#">문의</a>
+        <a href="contact.html">문의</a>
       </nav>
     </header>
 
@@ -155,18 +160,16 @@
       <p>심언필 목사</p>
 
       <h2>예배 안내</h2>
-      <div class="accordion">
 
-        <div class="acc-item">
-          <button class="acc-btn">예배 <span>▾</span></button>
-          <div class="acc-content">
-            <ul>
-              <li>주일 예배 — 오전 11:00</li>
-              <li>수요 기도회 — 수요일 오후 9:00</li>
-              <li>새벽기도회 — 매일 새벽 5:00</li>
-            </ul>
-          </div>
-        </div>
+      <!-- 예배: 기본 표시 -->
+      <ul style="margin-bottom: 8px;">
+        <li>주일 예배 — 오전 11:00</li>
+        <li>수요 기도회 — 수요일 오후 9:00</li>
+        <li>새벽기도회 — 매일 새벽 5:00</li>
+      </ul>
+
+      <!-- 부서모임 / 기도·훈련: 아코디언 -->
+      <div class="accordion">
 
         <div class="acc-item">
           <button class="acc-btn">부서 모임 <span>▾</span></button>
@@ -194,16 +197,7 @@
 
       <h2>문의</h2>
       <p>TEL: (031) 286-0691</p>
-      <p style="margin-top: 12px;">
-        <a href="https://www.youtube.com/@필그림소망교회" target="_blank"
-          style="color: #c00; text-decoration: none; font-size: 15px;">
-          ▶ 유튜브 채널 바로가기
-        </a>
-      </p>
-      <p style="margin-top: 20px; font-size: 13px; color: #aaa; border-top: 1px solid #eee; padding-top: 16px;">
-        홈페이지 버그 제보 :
-        <a href="mailto:helloshr09@gmail.com" style="color: #aaa;">helloshr09@gmail.com</a>
-      </p>
+      <a href="contact.html" class="contact-btn">문의 페이지 바로가기 →</a>
     </main>
 
     <footer>
