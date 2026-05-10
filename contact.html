@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>문의 — 필그림소망교회</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: 'Noto Serif KR', serif;
+        background-color: #f5f0e8;
+        color: #333333;
+      }
+
+      header {
+        background-color: #2c3e6b;
+        padding: 16px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .church-title { color: #ffffff; font-size: 20px; font-weight: 700; }
+      .church-title span {
+        display: block; font-size: 11px;
+        color: #aabbdd; font-weight: 400; margin-top: 2px;
+      }
+
+      nav a {
+        color: #ccddff; text-decoration: none;
+        margin-left: 28px; font-size: 14px;
+      }
+      nav a:hover { color: #ffffff; }
+
+      main {
+        max-width: 700px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        padding: 50px;
+        border-radius: 8px;
+      }
+
+      h2 {
+        font-size: 18px; color: #2c3e6b;
+        border-left: 4px solid #2c3e6b;
+        padding-left: 12px;
+        margin-bottom: 16px;
+      }
+
+      p { font-size: 15px; line-height: 1.8; color: #555555; margin: 4px 0; }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 0;
+        border-bottom: 1px solid #f0ece4;
+      }
+
+      .contact-label {
+        font-size: 13px;
+        color: #888;
+        width: 80px;
+        flex-shrink: 0;
+      }
+
+      .contact-value {
+        font-size: 15px;
+        color: #333;
+      }
+
+      .contact-value a {
+        color: #2c3e6b;
+        text-decoration: none;
+      }
+
+      .contact-value a:hover {
+        text-decoration: underline;
+      }
+
+      .youtube-btn {
+        display: inline-block;
+        margin-top: 4px;
+        padding: 6px 16px;
+        background-color: #c00;
+        color: #fff;
+        text-decoration: none;
+        font-size: 13px;
+        border-radius: 4px;
+      }
+
+      .youtube-btn:hover { background-color: #a00; }
+
+      .bug-section {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #eee;
+      }
+
+      .bug-section p {
+        font-size: 13px;
+        color: #aaa;
+      }
+
+      .bug-section a {
+        color: #aaa;
+      }
+
+      footer {
+        background-color: #2c3e6b;
+        color: #e8eef8;
+        text-align: center;
+        padding: 30px 20px;
+        font-size: 13px;
+        line-height: 2;
+      }
+
+      footer p { color: #e8eef8; }
+    </style>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="header-left">
+        <img src="logo.svg" alt="대한예수교장로회 합동" height="50">
+        <div class="church-title">
+          필그림소망교회
+          <span>Pilgrim Somang Church</span>
+        </div>
+      </div>
+      <nav>
+        <a href="index.html">예배 안내</a>
+        <a href="location.html">오시는 길</a>
+        <a href="contact.html">문의</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>문의</h2>
+
+      <div class="contact-item">
+        <span class="contact-label">전화</span>
+        <span class="contact-value">
+          <a href="tel:0312860691">(031) 286-0691</a>
+        </span>
+      </div>
+
+      <div class="contact-item">
+        <span class="contact-label">유튜브</span>
+        <span class="contact-value">
+          <a href="https://www.youtube.com/@필그림소망교회" target="_blank" class="youtube-btn">
+            ▶ 유튜브 채널 바로가기
+          </a>
+        </span>
+      </div>
+
+      <div class="bug-section">
+        <p>홈페이지 버그 제보 : <a href="mailto:helloshr09@gmail.com">helloshr09@gmail.com</a></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>대한예수교장로회 필그림소망교회</p>
+      <p>경기도 용인시 기흥구 농서로 10-7 | TEL: (031) 286-0691</p>
+      <p>© 2025 Pilgrim Somang Church. All rights reserved.</p>
+      <p style="margin-top: 12px; font-size: 11px; color: #6688aa;">Designed by 손하랑</p>
+    </footer>
+
+  </body>
+</html>
