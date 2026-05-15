@@ -218,7 +218,7 @@ const CHAR_X = 88;
 // Display size for sprite (slightly wider than collision box for visual appeal)
 const SPR_W = 78, SPR_H = Math.round(78 * FRAME_H / FRAME_W);
 
-const GRAV = 0.56, JUMP_V = -13.8, SPD0 = 3.2;
+const GRAV = 0.56, JUMP_V = -13.8, SPD0 = 6.4;
 
 const PRAYERS = [
   { short:'안전한 손길', full:'준비 과정부터 마치는 순간까지 주님의 손길 안에서 안전하고 은혜롭게 복음을 잘 전할 수 있도록' },
@@ -549,18 +549,18 @@ function copyAcct(){
     document.body.removeChild(t); cb(); }
 }
 
-function update(){
+function update(dt){
   if(state!=='run') return;
-  dist+=speed; speed=Math.min(SPD0+dist*0.0006,9.0);
-  gOff+=speed; cOff+=speed*0.28;
+  dist+=speed*dt; speed=Math.min(SPD0+dist*0.0007,9.0);
+  gOff+=speed*dt; cOff+=speed*dt*0.28;
 
-  if(!grounded){ charVY+=GRAV; charY+=charVY;
+  if(!grounded){ charVY+=GRAV*dt; charY+=charVY*dt;
     if(charY>=GY-CBH){ charY=GY-CBH; charVY=0; grounded=true; } }
 
-  animTick++;
+  animTick+=dt;
   if(animTick>20){ animFrame=(animFrame+1)%TOTAL_FRAMES; animTick=0; }
 
-  nextObsPx-=speed;
+  nextObsPx-=speed*dt;
   if(nextObsPx<=0){
     const near=PRAYER_DISTS.some((pd,i)=>!prayerSpawned[i]&&Math.abs(dist-pd)<200);
     if(!near){ const h=40+Math.random()*58; obstacles.push({x:CW+10,y:GY-h,w:24+Math.random()*12,h}); }
@@ -568,7 +568,6 @@ function update(){
   }
 
   PRAYER_DISTS.forEach((pd,i)=>{
-    // 처음 등장 거리 또는 놓친 뒤 600 거리 후 재등장
     const spawnDist = prayerNextDist[i];
     if(!prayerSpawned[i] && !collected[i] && dist >= spawnDist){
       prayerSpawned[i] = true;
@@ -579,7 +578,7 @@ function update(){
   const cx1=CHAR_X+8,cx2=CHAR_X+CBW-8,cy1=charY+14,cy2=charY+CBH-2;
 
   obstacles=obstacles.filter(o=>{
-    o.x-=speed;
+    o.x-=speed*dt;
     if(cx2>o.x+2&&cx1<o.x+o.w-2&&cy2>o.y+3&&cy1<o.y+o.h){
       state='dead';
       setTimeout(()=>showResult(), 600);
@@ -588,14 +587,13 @@ function update(){
   });
 
   prayers=prayers.filter(p=>{
-    p.x-=speed;
+    p.x-=speed*dt;
     if(cx2>p.x-4&&cx1<p.x+p.w+4&&cy2>p.y-8&&cy1<p.y+p.h+8){
       collected[p.idx]=true; updateBadges(); showToast(p.idx);
       spawnParticles(p.x+16,p.y+16);
       if(collected.every(Boolean)) showToast(-1);
       return false;
     }
-    // 화면 밖으로 나가면 → 600 거리 후 재등장
     if(p.x < -80){
       prayerSpawned[p.idx] = false;
       prayerNextDist[p.idx] = dist + 600;
@@ -605,6 +603,7 @@ function update(){
   });
 }
 
+let lastTime = 0;
 function draw(){
   ctx.clearRect(0,0,CW,CH);
   drawSky(); drawSun(); drawMountains(); drawPagoda(); drawClouds(); drawPalmTrees(); drawGround();
@@ -623,7 +622,13 @@ function draw(){
   }
 }
 
-function loop(){ update(); draw(); requestAnimationFrame(loop); }
+function loop(timestamp){
+  const raw = lastTime ? (timestamp - lastTime) / 16.667 : 1;
+  const dt = Math.min(raw, 3); // 최대 3배 보정 (탭 전환 후 튀는 현상 방지)
+  lastTime = timestamp;
+  update(dt); draw();
+  requestAnimationFrame(loop);
+}
 init();
 loadSprite().then(loop);
 </script>
