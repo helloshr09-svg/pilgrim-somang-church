@@ -137,16 +137,11 @@ body{
       <div class="panel-title">🙏 혜인의 V국 선교 여정</div>
       <div class="panel-text">
         박혜인 청년이 먼 나라로 선교를 떠납니다!<br>
-        장벽을 뛰어넘으며 <b>기도제목 4가지</b>를 모으면<br>
-        후원 정보가 공개됩니다 💛
+        장벽을 뛰어넘으며 기도제목을 모아보세요!<br>기도를 하나라도 수집하면 <b>후원 정보</b>가 열립니다 💛
       </div>
       <button class="btn" onclick="startGame()">달리기 시작! 🏃</button>
     </div>
-    <div class="panel hidden" id="overPanel">
-      <div class="panel-title">💪 포기하지 말아요!</div>
-      <div class="panel-text" id="overText"></div>
-      <button class="btn" onclick="restartGame()">다시 달리기!</button>
-    </div>
+    <div class="panel hidden" id="overPanel"></div>
   </div>
   <div class="prayer-bar" id="prayerBar">
     <div class="prayer-badge" data-i="0">🙏 기도 1</div>
@@ -160,21 +155,23 @@ body{
 
 <div id="vmodal">
   <div class="vbox">
-    <div class="vtitle">🎉 기도제목을 모두 모았어요!</div>
-    <div class="vdesc">박혜인 청년의 V국 H시 선교를 위해<br>함께 기도하고 후원해주세요</div>
+    <div class="vtitle" id="resultTitle"></div>
+    <div class="vdesc" id="resultDesc"></div>
+    <ul class="plist" id="plistEl"></ul>
     <div class="vverse">
       "한 사람이면 패하겠거니와 두 사람이면 맞설 수 있나니<br>
       세 겹 줄은 쉽게 끊어지지 아니하느니라"
       <strong>— 전도서 4:12</strong>
     </div>
-    <ul class="plist" id="plistEl"></ul>
-    <div class="acct-box">
+    <div class="acct-box" id="acctBox">
       <div class="acct-label">💛 V국 선교를 위한 후원 계좌</div>
       <div class="acct-num">우리은행 1002-363-980501</div>
       <button class="copy-btn" id="copyBtn" onclick="copyAcct()">📋 계좌번호 복사</button>
       <div class="contact">문의 · 연락 &nbsp;|&nbsp; <strong>010-3343-6863</strong></div>
     </div>
-    <button class="vclose" onclick="closeVictory()">닫기</button>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">
+      <button class="vclose" onclick="closeVictory()">다시 달리기!</button>
+    </div>
   </div>
 </div>
 
@@ -211,7 +208,7 @@ const CHAR_X = 88;
 // Display size for sprite (slightly wider than collision box for visual appeal)
 const SPR_W = 78, SPR_H = Math.round(78 * FRAME_H / FRAME_W);
 
-const GRAV = 0.56, JUMP_V = -13.8, SPD0 = 4.3;
+const GRAV = 0.56, JUMP_V = -13.8, SPD0 = 3.2;
 
 const PRAYERS = [
   { short:'안전한 손길', full:'준비 과정부터 마치는 순간까지 주님의 손길 안에서 안전하고 은혜롭게 복음을 잘 전할 수 있도록' },
@@ -270,39 +267,126 @@ canvas.addEventListener('touchstart', e=>{ e.preventDefault(); jump(); },{passiv
 // ── Draw ─────────────────────────────────────────────────
 
 function drawSky() {
+  // 베트남 열대 하늘 - 따뜻하고 약간 뿌연 느낌
   const g = ctx.createLinearGradient(0,0,0,GY);
-  g.addColorStop(0,'#5BB8D8'); g.addColorStop(0.55,'#A8D8EE'); g.addColorStop(1,'#FFE4A0');
+  g.addColorStop(0,'#6AAECC'); g.addColorStop(0.45,'#C8DFF0');
+  g.addColorStop(0.82,'#F5D98B'); g.addColorStop(1,'#F0B060');
   ctx.fillStyle=g; ctx.fillRect(0,0,CW,GY);
 }
 
 function drawSun() {
-  ctx.fillStyle='rgba(255,220,60,0.38)';
-  ctx.beginPath(); ctx.arc(688,44,46,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#FFDA40';
-  ctx.beginPath(); ctx.arc(688,44,26,0,Math.PI*2); ctx.fill();
+  // 열대 뜨거운 태양
+  ctx.fillStyle='rgba(255,180,40,0.22)';
+  ctx.beginPath(); ctx.arc(670,38,56,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='rgba(255,200,60,0.4)';
+  ctx.beginPath(); ctx.arc(670,38,38,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#FFD040';
+  ctx.beginPath(); ctx.arc(670,38,22,0,Math.PI*2); ctx.fill();
+}
+
+function drawMountains() {
+  // 하롱베이/중부고원 스타일 산 실루엣 (맨 뒤, 느리게 스크롤)
+  const mOff = cOff * 0.15;
+  const mountains = [
+    {x:50,h:80},{x:160,h:110},{x:280,h:70},{x:380,h:95},
+    {x:490,h:85},{x:600,h:105},{x:720,h:75},{x:830,h:90},
+    {x:940,h:100},{x:1060,h:72},{x:1160,h:88}
+  ];
+  ctx.fillStyle='rgba(80,110,70,0.35)';
+  ctx.beginPath(); ctx.moveTo(0,GY);
+  mountains.forEach(m=>{
+    const mx=((m.x-mOff%(CW+300))+CW+300)%(CW+300)-100;
+    ctx.lineTo(mx-m.h*0.7, GY-m.h*0.3);
+    ctx.lineTo(mx, GY-m.h);
+    ctx.lineTo(mx+m.h*0.7, GY-m.h*0.3);
+  });
+  ctx.lineTo(CW,GY); ctx.closePath(); ctx.fill();
+
+  // 두 번째 레이어 산 (더 진하게)
+  ctx.fillStyle='rgba(55,85,50,0.45)';
+  ctx.beginPath(); ctx.moveTo(0,GY);
+  mountains.forEach(m=>{
+    const mx=((m.x+150-mOff*1.3%(CW+300))+CW+300)%(CW+300)-100;
+    const h=m.h*0.65;
+    ctx.lineTo(mx-h*0.65, GY-h*0.3);
+    ctx.lineTo(mx, GY-h);
+    ctx.lineTo(mx+h*0.65, GY-h*0.3);
+  });
+  ctx.lineTo(CW,GY); ctx.closePath(); ctx.fill();
+}
+
+function drawPagoda() {
+  // 베트남 탑/정자 실루엣 (고정 배경)
+  const px=560, py=GY-10;
+  ctx.fillStyle='rgba(50,70,40,0.5)';
+  // 탑 몸체 3층
+  [[30,40],[22,30],[14,22]].forEach(([w,h],i)=>{
+    const ly = py-40-i*28;
+    ctx.fillRect(px-w/2, ly-h, w, h);
+    // 처마
+    ctx.beginPath();
+    ctx.moveTo(px-w/2-8, ly-h+4);
+    ctx.lineTo(px, ly-h-8);
+    ctx.lineTo(px+w/2+8, ly-h+4);
+    ctx.closePath(); ctx.fill();
+  });
+  // 기단
+  ctx.fillRect(px-22, py-40, 44, 10);
+}
+
+function drawPalmTrees() {
+  // 야자수 (중간 속도 스크롤)
+  const pOff = gOff * 0.4;
+  const palms = [{x:120,h:80},{x:380,h:95},{x:640,h:75},{x:900,h:88},{x:1150,h:82}];
+  palms.forEach(p=>{
+    const tx=((p.x-pOff%(CW+250))+CW+250)%(CW+250)-60;
+    const ty=GY-p.h;
+    // 줄기
+    ctx.strokeStyle='#5A3A10'; ctx.lineWidth=5;
+    ctx.beginPath();
+    ctx.moveTo(tx,GY); ctx.quadraticCurveTo(tx+12,ty+p.h*0.5,tx+6,ty);
+    ctx.stroke();
+    // 잎 6장
+    ctx.fillStyle='rgba(40,100,30,0.85)';
+    [[-40,-12],[-28,-28],[-8,-38],[16,-36],[32,-22],[38,-6]].forEach(([lx,ly])=>{
+      ctx.beginPath();
+      ctx.moveTo(tx+6,ty);
+      ctx.quadraticCurveTo(tx+6+lx/2,ty+ly/2-8, tx+6+lx,ty+ly);
+      ctx.quadraticCurveTo(tx+6+lx/2+4,ty+ly/2, tx+6,ty);
+      ctx.fill();
+    });
+  });
 }
 
 function drawClouds() {
-  const clouds=[{x:80,y:36,s:1},{x:255,y:20,s:1.2},{x:488,y:44,s:0.88},{x:705,y:28,s:1.05}];
-  ctx.fillStyle='rgba(255,255,255,0.86)';
+  // 열대 뭉게구름, 약간 더 두껍게
+  const clouds=[{x:60,y:30,s:1.1},{x:240,y:16,s:1.3},{x:470,y:40,s:0.95},{x:690,y:22,s:1.15}];
+  ctx.fillStyle='rgba(255,255,255,0.78)';
   clouds.forEach(c=>{
-    const cx=((c.x-cOff%(CW+200))+CW+200)%(CW+200)-60;
-    const r=28*c.s;
+    const cx=((c.x-cOff%(CW+220))+CW+220)%(CW+220)-70;
+    const r=30*c.s;
     ctx.beginPath();
     ctx.arc(cx,c.y,r,0,Math.PI*2);
-    ctx.arc(cx-r*0.7,c.y+5,r*0.65,0,Math.PI*2);
-    ctx.arc(cx+r*0.75,c.y+6,r*0.6,0,Math.PI*2);
+    ctx.arc(cx-r*0.65,c.y+6,r*0.7,0,Math.PI*2);
+    ctx.arc(cx+r*0.7,c.y+7,r*0.65,0,Math.PI*2);
+    ctx.arc(cx-r*0.2,c.y-r*0.4,r*0.55,0,Math.PI*2);
     ctx.fill();
   });
 }
 
 function drawGround() {
-  ctx.fillStyle='#8B5E18'; ctx.fillRect(0,GY,CW,CH-GY);
-  ctx.fillStyle='#A87028'; ctx.fillRect(0,GY,CW,9);
-  ctx.strokeStyle='#6A4408'; ctx.lineWidth=1.5;
+  // 베트남 붉은 흙길
+  ctx.fillStyle='#7A3818'; ctx.fillRect(0,GY,CW,CH-GY);
+  // 흙길 상단 (약간 밝은 테두리)
+  ctx.fillStyle='#A04E28'; ctx.fillRect(0,GY,CW,7);
+  // 풀 라인
+  ctx.fillStyle='#4A8030';
+  ctx.fillRect(0,GY,CW,4);
+  // 이동하는 흙길 선
+  ctx.strokeStyle='#5A2808'; ctx.lineWidth=1.2;
   for(let i=0;i<14;i++){
-    const x=((i*70-gOff%70)+70)%(CW+70)-35;
-    ctx.beginPath(); ctx.moveTo(x,GY+4); ctx.lineTo(x+28,GY+4); ctx.stroke();
+    const x=((i*68-gOff%68)+68)%(CW+68)-34;
+    ctx.beginPath(); ctx.moveTo(x,GY+5); ctx.lineTo(x+24,GY+5); ctx.stroke();
   }
 }
 
@@ -321,6 +405,8 @@ function drawCharSprite(cy, fIdx) {
 function drawObstacle(o) {
   const x=Math.round(o.x), y=Math.round(o.y);
   const bh=14, bw=22;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x,y,o.w,o.h); ctx.clip();
   ctx.fillStyle='#9A8878'; ctx.fillRect(x,y,o.w,o.h);
   ctx.strokeStyle='#7A6858'; ctx.lineWidth=0.8;
   for(let r=0;r*bh<o.h;r++){
@@ -328,6 +414,7 @@ function drawObstacle(o) {
     for(let c=-1;c*bw<o.w+bw;c++)
       ctx.strokeRect(x+c*bw-off+1,y+r*bh+1,bw-2,bh-2);
   }
+  ctx.restore();
   ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(x+o.w,y+3,4,o.h-3);
   ctx.fillStyle='rgba(255,255,255,0.55)';
   ctx.font='bold 9px "Noto Sans KR",sans-serif'; ctx.textAlign='center';
@@ -392,17 +479,36 @@ function showToast(idx){
   toastTimeout=setTimeout(()=>el.classList.remove('show'),3800);
 }
 
-function showVictory(){
-  state='victory';
-  document.getElementById('plistEl').innerHTML=PRAYERS.map((p,i)=>
-    '<li><span class="pnum">'+(i+1)+'</span><span>'+p.full+'</span></li>'
-  ).join('');
+function showResult(isClear){
+  state = isClear ? 'victory' : 'dead';
+  const cnt = collected.filter(Boolean).length;
+
+  // Title & desc
+  document.getElementById('resultTitle').innerHTML = isClear
+    ? '🎉 CLEAR!' : '😅 ' + cnt + '/4 기도제목 수집';
+  document.getElementById('resultDesc').innerHTML = isClear
+    ? '박혜인 청년의 V국 H시 선교를 위해<br>함께 기도하고 후원해주세요 💛'
+    : '포기하지 말고 다시 달려주세요!<br>기도제목을 하나라도 모으면 후원 정보가 열려요 🙏';
+
+  // Prayer list — 수집한 것만 표시, 미수집은 흐리게
+  document.getElementById('plistEl').innerHTML = PRAYERS.map((p,i) => {
+    if(collected[i]){
+      return '<li><span class="pnum">'+(i+1)+'</span><span>'+p.full+'</span></li>';
+    } else {
+      return '<li style="opacity:0.35"><span class="pnum" style="background:#ccc;color:#888">'+(i+1)+'</span><span>아직 수집하지 못했어요</span></li>';
+    }
+  }).join('');
+
+  // 후원 정보 — 기도 1개 이상 수집 시 공개
+  document.getElementById('acctBox').style.display = cnt > 0 ? 'block' : 'none';
+
   document.getElementById('vmodal').classList.add('show');
 }
+function showVictory(){ showResult(true); }
 
 function closeVictory(){
   document.getElementById('vmodal').classList.remove('show');
-  init(); document.getElementById('startPanel').classList.remove('hidden');
+  restartGame();
 }
 
 function copyAcct(){
@@ -418,7 +524,7 @@ function copyAcct(){
 
 function update(){
   if(state!=='run') return;
-  dist+=speed; speed=Math.min(SPD0+dist*0.0006,8.5);
+  dist+=speed; speed=Math.min(SPD0+dist*0.0006,7.0);
   gOff+=speed; cOff+=speed*0.28;
 
   if(!grounded){ charVY+=GRAV; charY+=charVY;
@@ -431,7 +537,7 @@ function update(){
   if(nextObsPx<=0){
     const near=PRAYER_DISTS.some((pd,i)=>!prayerSpawned[i]&&Math.abs(dist-pd)<200);
     if(!near){ const h=40+Math.random()*58; obstacles.push({x:CW+10,y:GY-h,w:24+Math.random()*12,h}); }
-    nextObsPx=340+Math.random()*300;
+    nextObsPx=500+Math.random()*300;
   }
 
   PRAYER_DISTS.forEach((pd,i)=>{
@@ -445,9 +551,7 @@ function update(){
     o.x-=speed;
     if(cx2>o.x+2&&cx1<o.x+o.w-2&&cy2>o.y+3&&cy1<o.y+o.h){
       state='dead';
-      document.getElementById('overText').innerHTML=
-        '기도제목 '+collected.filter(Boolean).length+'/4 수집<br><br>다시 달려서 혜인의 선교를 응원해주세요! 💪';
-      document.getElementById('overPanel').classList.remove('hidden');
+      setTimeout(()=>showResult(false), 600);
     }
     return o.x>-80;
   });
@@ -466,7 +570,7 @@ function update(){
 
 function draw(){
   ctx.clearRect(0,0,CW,CH);
-  drawSky(); drawSun(); drawClouds(); drawGround();
+  drawSky(); drawSun(); drawMountains(); drawPagoda(); drawClouds(); drawPalmTrees(); drawGround();
   if(state==='run'||state==='dead'){
     obstacles.forEach(drawObstacle);
     prayers.forEach(drawPrayer);
