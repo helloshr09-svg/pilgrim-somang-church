@@ -551,7 +551,7 @@ function copyAcct(){
 
 function update(){
   if(state!=='run') return;
-  dist+=speed; speed=Math.min(SPD0+dist*0.0006,7.0);
+  dist+=speed; speed=Math.min(SPD0+dist*0.0006,9.0);
   gOff+=speed; cOff+=speed*0.28;
 
   if(!grounded){ charVY+=GRAV; charY+=charVY;
