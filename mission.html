@@ -431,7 +431,7 @@ function update(){
   if(nextObsPx<=0){
     const near=PRAYER_DISTS.some((pd,i)=>!prayerSpawned[i]&&Math.abs(dist-pd)<200);
     if(!near){ const h=40+Math.random()*58; obstacles.push({x:CW+10,y:GY-h,w:24+Math.random()*12,h}); }
-    nextObsPx=340+Math.random()*280;
+    nextObsPx=340+Math.random()*300;
   }
 
   PRAYER_DISTS.forEach((pd,i)=>{
