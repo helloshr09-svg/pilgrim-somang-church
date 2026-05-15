@@ -425,7 +425,7 @@ function update(){
     if(charY>=GY-CBH){ charY=GY-CBH; charVY=0; grounded=true; } }
 
   animTick++;
-  if(animTick>5){ animFrame=(animFrame+1)%TOTAL_FRAMES; animTick=0; }
+  if(animTick>10){ animFrame=(animFrame+1)%TOTAL_FRAMES; animTick=0; }
 
   nextObsPx-=speed;
   if(nextObsPx<=0){
