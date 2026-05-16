@@ -92,6 +92,8 @@ const CELL = isMobile
 const CW=COLS*CELL, CH=ROWS*CELL;
 const TOTAL=120, RADIUS=CELL/2-2.5;
 const SKEY='apple-game-best-capy';
+const gameOverImg=new Image(); gameOverImg.src='gameover_capybara.png';
+gameOverImg.onload=()=>{ if(gameOver) drawScene([],false); };
 
 const canvas=document.getElementById('gc'), ctx=canvas.getContext('2d');
 const dpr=window.devicePixelRatio||1;
@@ -208,23 +210,22 @@ function drawScene(sel, isValid) {
     ctx.fillStyle=dark()?'rgba(0,0,0,0.78)':'rgba(253,248,242,0.88)';
     ctx.fillRect(0,0,CW,CH);
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    if(isNew) {
-      ctx.fillStyle='#BA7517';
-      ctx.font=`500 20px system-ui`;
-      ctx.fillText('🏆 최고 기록 달성!', CW/2, CH/2-40);
+    const goW=Math.min(CW*0.55,220);
+    const goH=gameOverImg.complete&&gameOverImg.naturalWidth>0
+      ?goW*(gameOverImg.naturalHeight/gameOverImg.naturalWidth):goW;
+    const totalH=(isNew?30:0)+goH+70;
+    let y=CH/2-totalH/2;
+    if(isNew){
+      ctx.fillStyle='#BA7517'; ctx.font=`500 20px system-ui`;
+      ctx.fillText('🏆 최고 기록 달성!',CW/2,y+12); y+=30;
     }
-    ctx.fillStyle=dark()?'#ffb899':'#c04010';
-    ctx.font=`500 26px system-ui`;
-    ctx.fillText('게임 종료! 🍎', CW/2, CH/2-(isNew?8:20));
-    ctx.fillStyle=dark()?'#ccc':'#555';
-    ctx.font=`400 16px system-ui`;
-    ctx.fillText(`최종 점수: ${score}점`, CW/2, CH/2+(isNew?26:18));
-    ctx.fillStyle='#BA7517';
-    ctx.font=`400 14px system-ui`;
-    ctx.fillText(`최고 기록: ${bestScore}점`, CW/2, CH/2+(isNew?52:42));
-    ctx.fillStyle=dark()?'#777':'#aaa';
-    ctx.font=`400 11px system-ui`;
-    ctx.fillText('(초상권 협의는 계속 진행 중입니다)', CW/2, CH/2+(isNew?70:60));
+    ctx.drawImage(gameOverImg,CW/2-goW/2,y,goW,goH); y+=goH+18;
+    ctx.fillStyle=dark()?'#ccc':'#555'; ctx.font=`400 16px system-ui`;
+    ctx.fillText(`최종 점수: ${score}점`,CW/2,y); y+=24;
+    ctx.fillStyle='#BA7517'; ctx.font=`400 14px system-ui`;
+    ctx.fillText(`최고 기록: ${bestScore}점`,CW/2,y); y+=22;
+    ctx.fillStyle=dark()?'#777':'#aaa'; ctx.font=`400 11px system-ui`;
+    ctx.fillText('(초상권 협의는 계속 진행 중입니다)',CW/2,y);
   }
 }
 
