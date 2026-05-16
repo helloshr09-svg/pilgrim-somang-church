@@ -1,0 +1,258 @@
+
+<style>
+  #eden-wrap {
+    display:flex; flex-direction:column; align-items:center;
+    padding:1.5rem 0 1rem; gap:0.8rem;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  #eden-title {
+    font-size:21px; font-weight:700;
+    color:var(--color-text-primary);
+    letter-spacing:1px; text-align:center;
+  }
+  #eden-sub {
+    font-size:11px; color:var(--color-text-secondary);
+    font-style:italic; text-align:center; margin-top:-2px;
+    line-height:1.7; max-width:280px;
+  }
+  #eden-verse-ref {
+    font-size:10px; color:var(--color-text-tertiary);
+    text-align:center; margin-top:-4px; font-style:italic;
+  }
+  #score-row {
+    display:flex; gap:3rem; text-align:center;
+    font-size:11px; color:var(--color-text-secondary); font-style:italic;
+  }
+  .sval {
+    display:block; font-size:22px; font-weight:700;
+    font-style:normal; color:var(--color-text-primary);
+  }
+  #game-canvas {
+    display:block; border-radius:10px;
+    border:1.5px solid rgba(62,130,42,0.35);
+  }
+  #start-btn {
+    padding:8px 30px; border-radius:4px;
+    border:1px solid #4A9240;
+    background:transparent; color:#4A9240;
+    font-size:13px; cursor:pointer;
+    font-family:Georgia,serif; letter-spacing:0.5px;
+    transition:all 0.15s;
+  }
+  #start-btn:hover { background:#4A9240; color:#fff; }
+  #eve-msg {
+    min-height:16px; font-size:12px; font-style:italic;
+    color:#C0392B; text-align:center; font-weight:700;
+  }
+  .d-pad {
+    display:grid;
+    grid-template-areas:'. u .' 'l . r' '. d .';
+    gap:4px;
+  }
+  .d-btn {
+    width:40px; height:40px; border-radius:4px;
+    border:1px solid #4A9240; background:transparent;
+    color:#4A9240; font-size:16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    user-select:none; -webkit-tap-highlight-color:transparent;
+    transition:all 0.1s;
+  }
+  .d-btn:active { background:#4A9240; color:#fff; transform:scale(0.93); }
+  #d-up{grid-area:u;} #d-left{grid-area:l;} #d-right{grid-area:r;} #d-down{grid-area:d;}
+  #eden-hint { font-size:11px; color:var(--color-text-tertiary); font-style:italic; }
+</style>
+
+<div id="eden-wrap">
+  <h2 class="sr-only">-에덴의 뱀-</h2>
+  <div id="eden-title">🐍 선악과 쟁탈전</div>
+  <div id="eden-sub">
+    "선악을 알게 하는 나무의 열매는 먹지 말라<br>네가 먹는 날에는 반드시 죽으리라"
+  </div>
+  <div id="eden-verse-ref">— 창세기 2장 16~17절</div>
+  <div id="score-row">
+    <div>먹어치운 선악과<span class="sval" id="score">0</span></div>
+    <div>최고 기록<span class="sval" id="best">0</span></div>
+  </div>
+  <canvas id="game-canvas" width="300" height="300"></canvas>
+  <div id="eve-msg"></div>
+  <button id="start-btn">게임 시작</button>
+  <div class="d-pad">
+    <button class="d-btn" id="d-up">↑</button>
+    <button class="d-btn" id="d-left">←</button>
+    <button class="d-btn" id="d-right">→</button>
+    <button class="d-btn" id="d-down">↓</button>
+  </div>
+  <div id="eden-hint">방향키로도 조작할 수 있어요</div>
+</div>
+
+<script>
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const CELL = 15;
+const COLS = W / CELL;
+const ROWS = H / CELL;
+
+let snake, dir, nextDir, food, score, bestScore=0, interval, running=false, dead=false;
+let eveTimer = null;
+
+const eveWarnings = [
+  [5,  '이브가 배고프다며 투덜거리고 있어...'],
+  [10, '이브가 사과나무 쪽으로 걷기 시작했어!'],
+  [15, '이브가 거의 다 왔어! 서둘러!'],
+  [20, '이브의 눈이 번쩍이기 시작했다...!'],
+];
+
+function showEveMsg(msg, dur=2500) {
+  const el = document.getElementById('eve-msg');
+  el.textContent = msg;
+  if (eveTimer) clearTimeout(eveTimer);
+  eveTimer = setTimeout(() => { el.textContent=''; }, dur);
+}
+
+function init() {
+  snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+  dir={x:1,y:0}; nextDir={x:1,y:0};
+  score=0; dead=false; running=true;
+  document.getElementById('score').textContent='0';
+  document.getElementById('eve-msg').textContent='';
+  placeFood();
+  if(interval) clearInterval(interval);
+  interval=setInterval(tick, 120);
+  document.getElementById('start-btn').textContent='다시 시작';
+}
+
+function placeFood() {
+  let pos;
+  do { pos={x:Math.floor(Math.random()*COLS), y:Math.floor(Math.random()*ROWS)}; }
+  while(snake.some(s=>s.x===pos.x&&s.y===pos.y));
+  food=pos;
+}
+
+function tick() {
+  dir=nextDir;
+  const head={x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+  if(head.x<0||head.x>=COLS||head.y<0||head.y>=ROWS||snake.some(s=>s.x===head.x&&s.y===head.y)){
+    clearInterval(interval); running=false; dead=true; draw(); return;
+  }
+  snake.unshift(head);
+  if(head.x===food.x&&head.y===food.y){
+    score++;
+    document.getElementById('score').textContent=score;
+    if(score>bestScore){ bestScore=score; document.getElementById('best').textContent=score; }
+    placeFood();
+    const warn=eveWarnings.find(w=>w[0]===score);
+    if(warn) showEveMsg(warn[1]);
+    const spd=Math.max(65, 120-Math.floor(score/5)*12);
+    clearInterval(interval); interval=setInterval(tick,spd);
+  } else { snake.pop(); }
+  draw();
+}
+
+function rr(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function drawApple(cx, cy, sc=1) {
+  const r = (CELL/2 - 2) * sc;
+  ctx.fillStyle = '#D63B2A';
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = '#7A4520';
+  ctx.lineWidth = 1.2 * sc;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r);
+  ctx.lineTo(cx + 2*sc, cy - r - 5*sc);
+  ctx.stroke();
+  ctx.fillStyle = '#2A8C3A';
+  ctx.beginPath();
+  ctx.ellipse(cx + 4*sc, cy - r - 3*sc, 4*sc, 2*sc, -0.5, 0, Math.PI*2);
+  ctx.fill();
+}
+
+function drawEyes(hx, hy) {
+  let e1, e2;
+  if(dir.x!==0){e1={x:hx+dir.x*2.5,y:hy-2.8};e2={x:hx+dir.x*2.5,y:hy+2.8};}
+  else{e1={x:hx-2.8,y:hy+dir.y*2.5};e2={x:hx+2.8,y:hy+dir.y*2.5};}
+  ctx.fillStyle='#0A1200';
+  [e1,e2].forEach(e=>{ctx.beginPath();ctx.arc(e.x,e.y,1.7,0,Math.PI*2);ctx.fill();});
+  ctx.fillStyle='rgba(255,255,220,0.8)';
+  [e1,e2].forEach(e=>{ctx.beginPath();ctx.arc(e.x+0.5,e.y-0.6,0.65,0,Math.PI*2);ctx.fill();});
+}
+
+function draw(){
+  ctx.fillStyle='#5F9147';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle='rgba(80,160,50,0.13)';
+  ctx.lineWidth=0.5;
+  for(let i=0;i<=COLS;i++){ctx.beginPath();ctx.moveTo(i*CELL,0);ctx.lineTo(i*CELL,H);ctx.stroke();}
+  for(let j=0;j<=ROWS;j++){ctx.beginPath();ctx.moveTo(0,j*CELL);ctx.lineTo(W,j*CELL);ctx.stroke();}
+
+  drawApple(food.x*CELL+CELL/2, food.y*CELL+CELL/2);
+
+  snake.forEach((s,i)=>{
+    const t=snake.length>1?i/(snake.length-1):0;
+    ctx.fillStyle=i===0?'#FFD700':`hsl(43,88%,${Math.round(62-t*24)}%)`;
+    const x=s.x*CELL+2,y=s.y*CELL+2,w=CELL-4,h=CELL-4;
+    rr(x,y,w,h,3); ctx.fill();
+  });
+
+  if(snake.length>0) drawEyes(snake[0].x*CELL+CELL/2, snake[0].y*CELL+CELL/2);
+
+  if(dead){
+    ctx.fillStyle='rgba(0,0,0,0.6)';
+    ctx.fillRect(0,0,W,H);
+    ctx.textAlign='center';
+    ctx.fillStyle='#FFD700';
+    ctx.font='bold 18px Georgia,serif';
+    ctx.fillText('에덴에서 추방됨',W/2,H/2-32);
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.font='400 13px Georgia,serif';
+    ctx.fillText('먹어치운 선악과: '+score+'개',W/2,H/2-4);
+    ctx.fillStyle='rgba(210,180,100,0.7)';
+    ctx.font='italic 10.5px Georgia,serif';
+    ctx.fillText('"죄의 삯은 사망이요"',W/2,H/2+18);
+    ctx.fillStyle='rgba(200,200,200,0.6)';
+    ctx.font='italic 11px Georgia,serif';
+    ctx.fillText('-로마서 6:23 -',W/2,H/2+38);
+  }
+
+  if(!running&&!dead){
+    ctx.fillStyle='rgba(20,40,15,0.75)';
+    ctx.fillRect(0,0,W,H);
+    drawApple(W/2, H/2-38, 3);
+    ctx.textAlign='center';
+    ctx.fillStyle='#FFD700';
+    ctx.font='bold 17px Georgia,serif';
+    ctx.fillText('선악과 쟁탈전',W/2,H/2+10);
+    ctx.fillStyle='rgba(255,255,255,0.6)';
+    ctx.font='italic 11px Georgia,serif';
+    ctx.fillText('이브보다 먼저 먹어치워라',W/2,H/2+28);
+  }
+}
+
+document.getElementById('start-btn').addEventListener('click',init);
+document.addEventListener('keydown',e=>{
+  if(!running)return;
+  if(e.key==='ArrowUp'&&dir.y!==1)nextDir={x:0,y:-1};
+  if(e.key==='ArrowDown'&&dir.y!==-1)nextDir={x:0,y:1};
+  if(e.key==='ArrowLeft'&&dir.x!==1)nextDir={x:-1,y:0};
+  if(e.key==='ArrowRight'&&dir.x!==-1)nextDir={x:1,y:0};
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();
+});
+document.getElementById('d-up').addEventListener('click',()=>{if(running&&dir.y!==1)nextDir={x:0,y:-1};});
+document.getElementById('d-down').addEventListener('click',()=>{if(running&&dir.y!==-1)nextDir={x:0,y:1};});
+document.getElementById('d-left').addEventListener('click',()=>{if(running&&dir.x!==1)nextDir={x:-1,y:0};});
+document.getElementById('d-right').addEventListener('click',()=>{if(running&&dir.x!==-1)nextDir={x:1,y:0};});
+
+food={x:10,y:7};
+draw();
+</script>
