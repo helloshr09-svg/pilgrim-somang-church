@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>카피바라의 사과 게임</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+body { font-family: system-ui, sans-serif; background: #fdf8f2; display: flex; flex-direction: column; align-items: center; padding: 1rem 0; gap: 10px; min-height: 100vh; }
+
+#capy-section {
+  display: flex; align-items: center; gap: 16px;
+  width: 560px; max-width: 98vw;
+  background: #f3ede6; border-radius: 12px;
+  padding: 14px 20px; border: 1px solid #ddd6cc;
+}
+#capy-img {
+  width: 88px; height: 88px; object-fit: cover;
+  object-position: center 30%; border-radius: 50%;
+  flex-shrink: 0; border: 2px solid #ccc4b8;
+}
+#game-title { font-size: 18px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; }
+.disclaimer { font-size: 12px; color: #888; line-height: 1.65; }
+.disclaimer b { font-weight: 500; color: #BA7517; }
+
+#hdr { display: flex; align-items: center; justify-content: space-between; width: 560px; max-width: 98vw; }
+.sb { background: #f3ede6; border-radius: 8px; padding: 5px 13px; text-align: center; }
+.sl { font-size: 11px; color: #888; }
+.sv { font-size: 19px; font-weight: 500; color: #1a1a1a; line-height: 1.3; }
+#sv-best { color: #BA7517; }
+
+#rbtn {
+  background: transparent; border: 1px solid #ccc;
+  border-radius: 8px; padding: 6px 14px; font-size: 13px;
+  cursor: pointer; color: #333; font-family: inherit;
+}
+#rbtn:hover { background: #f3ede6; }
+
+#tbw { width: 560px; max-width: 98vw; height: 4px; background: #e5ddd5; border-radius: 2px; overflow: hidden; }
+#tb  { height: 100%; border-radius: 2px; width: 100%; background: #1D9E75; transition: background 0.5s; }
+
+#cw { border-radius: 12px; overflow: hidden; border: 1px solid #ddd6cc; touch-action: none; }
+canvas { display: block; cursor: crosshair; }
+#msg { font-size: 13px; color: #888; min-height: 18px; }
+
+@media (prefers-color-scheme: dark) {
+  body { background: #1c1a16; }
+  #capy-section { background: #252218; border-color: #3a352c; }
+  #game-title { color: #eee; }
+  .sb { background: #252218; }
+  .sv { color: #eee; }
+  #rbtn { color: #ccc; border-color: #555; }
+  #rbtn:hover { background: #252218; }
+  #tbw { background: #333; }
+  #cw { border-color: #3a352c; }
+}
+</style>
+</head>
+<body>
+
+<div id="capy-section">
+  <!-- 카피바라 이미지를 src에 넣으세요 -->
+  <img id="capy-img" src="capybara.png" alt="카피바라"
+    onerror="this.style.display='none'">
+  <div>
+    <div id="game-title">🍎 카피바라의 사과 게임</div>
+    <div class="disclaimer">
+      사과를 사랑하는 카피바라가 직접 즐기는 숫자 게임.<br>
+      <b>⚠️ 본 캐릭터는 실제 인물을 모티브로 제작되었으며,<br>
+      현재 ○○○ 청년부 회장과 초상권 협의 중입니다 🙏</b>
+    </div>
+  </div>
+</div>
+
+<div id="hdr">
+  <div class="sb"><div class="sl">점수</div><div class="sv" id="sc">0</div></div>
+  <div class="sb"><div class="sl">🏆 최고기록</div><div class="sv" id="sv-best">-</div></div>
+  <div class="sb"><div class="sl">남은 사과</div><div class="sv" id="ac">0</div></div>
+  <div class="sb"><div class="sl">⏱ 시간</div><div class="sv" id="tc">120</div></div>
+  <button id="rbtn" onclick="startGame()">다시 시작</button>
+</div>
+
+<div id="tbw"><div id="tb"></div></div>
+<div id="cw"><canvas id="gc"></canvas></div>
+<div id="msg">합이 10이 되도록 드래그하세요! 🍎</div>
+
+<script>
+const COLS=17, ROWS=10, CELL=32;
+const CW=COLS*CELL, CH=ROWS*CELL;
+const TOTAL=120, RADIUS=CELL/2-2.5;
+const SKEY='apple-game-best-capy';
+
+const canvas=document.getElementById('gc'), ctx=canvas.getContext('2d');
+const dpr=window.devicePixelRatio||1;
+canvas.width=CW*dpr; canvas.height=CH*dpr;
+canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
+ctx.scale(dpr,dpr);
+
+let grid, score, bestScore=0, timeLeft, gameOver, timerID;
+let isDragging=false, sx, sy, cx, cy;
+let removing=[], removeAlpha=1, removeRaf=null, flashTO=null;
+
+// 최고기록 저장 (localStorage 사용)
+function loadBest() {
+  try { bestScore=parseInt(localStorage.getItem(SKEY))||0; document.getElementById('sv-best').textContent=bestScore||'-'; } catch(e){}
+}
+function saveBest(v) {
+  try { localStorage.setItem(SKEY, String(v)); } catch(e){}
+}
+
+const dark=()=>matchMedia('(prefers-color-scheme: dark)').matches;
+const C=()=>dark()?{
+  bg:'#1c1a16', apF:'#3a1500', apS:'#cc4a1a', apT:'#ffb899',
+  selF:'#0e2e1e', selS:'#5dcaa5', selT:'#9fe1cb',
+  rect:'rgba(30,180,120,0.2)', rBd:'#5dcaa5', bad:'#e24b4a'
+}:{
+  bg:'#fdf8f2', apF:'#fff5ec', apS:'#d85a20', apT:'#7a2e0a',
+  selF:'#edf7e8', selS:'#1a9060', selT:'#0a5030',
+  rect:'rgba(30,150,90,0.11)', rBd:'#1a9060', bad:'#e24b4a'
+};
+
+function initGrid() {
+  grid=Array.from({length:ROWS},()=>
+    Array.from({length:COLS},()=>({v:Math.ceil(Math.random()*9), alive:true}))
+  );
+}
+function countAlive() {
+  let n=0;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(grid[r][c].alive) n++;
+  return n;
+}
+function getPos(e) {
+  const rect=canvas.getBoundingClientRect(), src=e.touches?e.touches[0]:e;
+  return { x:(src.clientX-rect.left)*(CW/rect.width), y:(src.clientY-rect.top)*(CH/rect.height) };
+}
+function circleHitsRect(ccx,ccy,lx,ly,rx,ry) {
+  const nx=Math.max(lx,Math.min(ccx,rx)), ny=Math.max(ly,Math.min(ccy,ry));
+  const dx=ccx-nx, dy=ccy-ny;
+  return dx*dx+dy*dy<=RADIUS*RADIUS;
+}
+function getCells(x1,y1,x2,y2) {
+  const lx=Math.min(x1,x2), rx=Math.max(x1,x2);
+  const ly=Math.min(y1,y2), ry=Math.max(y1,y2);
+  const res=[];
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    if(!grid[r][c].alive) continue;
+    if(circleHitsRect(c*CELL+CELL/2, r*CELL+CELL/2, lx,ly,rx,ry)) res.push({r,c});
+  }
+  return res;
+}
+function sum(cells) { return cells.reduce((s,{r,c})=>s+grid[r][c].v, 0); }
+
+function drawScene(sel, isValid) {
+  const col=C();
+  ctx.clearRect(0,0,CW,CH);
+  ctx.fillStyle=col.bg; ctx.fillRect(0,0,CW,CH);
+
+  const selSet=new Set(sel.map(({r,c})=>r+','+c));
+  const remSet=new Set(removing.map(({r,c})=>r+','+c));
+
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) {
+    const cell=grid[r][c], key=r+','+c;
+    const isRem=remSet.has(key), isSel=selSet.has(key);
+    if(!cell.alive&&!isRem) continue;
+    const ccx=c*CELL+CELL/2, ccy=r*CELL+CELL/2;
+    ctx.save();
+    if(isRem) ctx.globalAlpha=removeAlpha;
+    ctx.beginPath(); ctx.arc(ccx,ccy,RADIUS,0,Math.PI*2);
+    ctx.fillStyle=isSel?col.selF:col.apF; ctx.fill();
+    ctx.strokeStyle=isSel?col.selS:col.apS;
+    ctx.lineWidth=isSel?2:1.5; ctx.stroke();
+    if(!isSel) {
+      ctx.save(); ctx.clip();
+      ctx.fillStyle='rgba(255,255,255,0.18)';
+      ctx.beginPath();
+      ctx.ellipse(ccx-RADIUS*0.2,ccy-RADIUS*0.3,RADIUS*0.35,RADIUS*0.22,-Math.PI/5,0,Math.PI*2);
+      ctx.fill(); ctx.restore();
+    }
+    ctx.fillStyle=isSel?col.selT:col.apT;
+    ctx.font=`500 ${Math.round(CELL*0.42)}px system-ui`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(cell.v, ccx, ccy+0.5);
+    ctx.restore();
+  }
+
+  if(isDragging) {
+    const lx=Math.min(sx,cx), rx=Math.max(sx,cx);
+    const ly=Math.min(sy,cy), ry=Math.max(sy,cy);
+    if(rx-lx>2||ry-ly>2) {
+      ctx.fillStyle=col.rect;
+      ctx.strokeStyle=sel.length>0&&isValid?col.rBd:sel.length>0?col.bad:col.rBd;
+      ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.rect(lx,ly,rx-lx,ry-ly);
+      ctx.fill(); ctx.stroke();
+    }
+  }
+
+  if(gameOver) {
+    const isNew=score>0&&score>=bestScore;
+    ctx.fillStyle=dark()?'rgba(0,0,0,0.78)':'rgba(253,248,242,0.88)';
+    ctx.fillRect(0,0,CW,CH);
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    if(isNew) {
+      ctx.fillStyle='#BA7517';
+      ctx.font=`500 20px system-ui`;
+      ctx.fillText('🏆 최고 기록 달성!', CW/2, CH/2-40);
+    }
+    ctx.fillStyle=dark()?'#ffb899':'#c04010';
+    ctx.font=`500 26px system-ui`;
+    ctx.fillText('게임 종료! 🍎', CW/2, CH/2-(isNew?8:20));
+    ctx.fillStyle=dark()?'#ccc':'#555';
+    ctx.font=`400 16px system-ui`;
+    ctx.fillText(`최종 점수: ${score}점`, CW/2, CH/2+(isNew?26:18));
+    ctx.fillStyle='#BA7517';
+    ctx.font=`400 14px system-ui`;
+    ctx.fillText(`최고 기록: ${bestScore}점`, CW/2, CH/2+(isNew?52:42));
+    ctx.fillStyle=dark()?'#777':'#aaa';
+    ctx.font=`400 11px system-ui`;
+    ctx.fillText('(초상권 협의는 계속 진행 중입니다)', CW/2, CH/2+(isNew?70:60));
+  }
+}
+
+let rafID=null;
+function loop() {
+  const sel=isDragging?getCells(sx,sy,cx,cy):[];
+  drawScene(sel, sum(sel)===10);
+  if(!gameOver) rafID=requestAnimationFrame(loop);
+}
+function animRemove(cells, onDone) {
+  removeAlpha=1; removing=cells;
+  function step() {
+    removeAlpha-=0.07;
+    if(removeAlpha<=0) { removing=[]; removeAlpha=1; onDone(); }
+    else removeRaf=requestAnimationFrame(step);
+  }
+  removeRaf=requestAnimationFrame(step);
+}
+function setMsg(txt, dur) {
+  clearTimeout(flashTO);
+  document.getElementById('msg').textContent=txt;
+  if(dur) flashTO=setTimeout(()=>{ if(!gameOver) document.getElementById('msg').textContent='합이 10이 되도록 드래그하세요! 🍎'; }, dur);
+}
+function updateUI() {
+  document.getElementById('sc').textContent=score;
+  document.getElementById('ac').textContent=countAlive();
+}
+function handleGameOver() {
+  gameOver=true;
+  if(score>bestScore) { bestScore=score; document.getElementById('sv-best').textContent=bestScore; saveBest(bestScore); }
+}
+
+function startGame() {
+  cancelAnimationFrame(rafID); cancelAnimationFrame(removeRaf);
+  clearInterval(timerID); clearTimeout(flashTO);
+  score=0; gameOver=false; isDragging=false; removing=[]; removeAlpha=1;
+  initGrid(); timeLeft=TOTAL;
+  document.getElementById('tc').textContent=TOTAL;
+  document.getElementById('tb').style.width='100%';
+  document.getElementById('tb').style.background='#1D9E75';
+  setMsg('합이 10이 되도록 드래그하세요! 🍎');
+  updateUI();
+  timerID=setInterval(()=>{
+    timeLeft--;
+    document.getElementById('tc').textContent=timeLeft;
+    const pct=timeLeft/TOTAL*100;
+    const bar=document.getElementById('tb');
+    bar.style.width=pct+'%';
+    bar.style.background=pct>40?'#1D9E75':pct>20?'#EF9F27':'#E24B4A';
+    if(timeLeft<=0) { clearInterval(timerID); handleGameOver(); }
+  }, 1000);
+  loop();
+}
+
+function onDragEnd() {
+  if(!isDragging) return;
+  const sel=getCells(sx,sy,cx,cy), s=sum(sel);
+  isDragging=false;
+  if(sel.length>0&&s===10) {
+    animRemove(sel, ()=>{ sel.forEach(({r,c})=>{grid[r][c].alive=false;}); score+=sel.length; updateUI(); });
+    const msgs=['냠냠 😋','카피바라 만족 🍎','굿굿 👍','맛있겠다 🤤'];
+    setMsg(`+${sel.length}개 제거! ${msgs[Math.floor(Math.random()*msgs.length)]}`, 1300);
+  } else if(sel.length>0) {
+    setMsg(`합: ${s} — 10이 되어야 해요 😅`, 900);
+  }
+}
+
+canvas.addEventListener('mousedown', e=>{if(gameOver)return;e.preventDefault();const p=getPos(e);isDragging=true;sx=cx=p.x;sy=cy=p.y;});
+canvas.addEventListener('mousemove', e=>{if(!isDragging)return;e.preventDefault();const p=getPos(e);cx=p.x;cy=p.y;});
+canvas.addEventListener('mouseup',   e=>{e.preventDefault();onDragEnd();});
+canvas.addEventListener('touchstart', e=>{e.preventDefault();if(gameOver)return;const p=getPos(e);isDragging=true;sx=cx=p.x;sy=cy=p.y;},{passive:false});
+canvas.addEventListener('touchmove',  e=>{e.preventDefault();if(!isDragging)return;const p=getPos(e);cx=p.x;cy=p.y;},{passive:false});
+canvas.addEventListener('touchend',   e=>{
+  e.preventDefault();
+  if(!isDragging)return;
+  if(e.changedTouches.length){const t=e.changedTouches[0],rect=canvas.getBoundingClientRect();cx=(t.clientX-rect.left)*(CW/rect.width);cy=(t.clientY-rect.top)*(CH/rect.height);}
+  onDragEnd();
+},{passive:false});
+
+loadBest();
+startGame();
+</script>
+</body>
+</html>
