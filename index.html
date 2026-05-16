@@ -3,16 +3,9 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>필그림소망교회</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
         font-family: 'Noto Serif KR', serif;
@@ -34,30 +27,17 @@
         gap: 14px;
       }
 
-      .church-title {
-        color: #ffffff;
-        font-size: 20px;
-        font-weight: 700;
-      }
-
+      .church-title { color: #ffffff; font-size: 20px; font-weight: 700; }
       .church-title span {
-        display: block;
-        font-size: 11px;
-        color: #aabbdd;
-        font-weight: 400;
-        margin-top: 2px;
+        display: block; font-size: 11px;
+        color: #aabbdd; font-weight: 400; margin-top: 2px;
       }
 
       nav a {
-        color: #ccddff;
-        text-decoration: none;
-        margin-left: 28px;
-        font-size: 14px;
+        color: #ccddff; text-decoration: none;
+        margin-left: 28px; font-size: 14px;
       }
-
-      nav a:hover {
-        color: #ffffff;
-      }
+      nav a:hover { color: #ffffff; }
 
       .banner {
         background-color: #1a2a50;
@@ -65,16 +45,8 @@
         text-align: center;
         padding: 40px 20px;
       }
-
-      .banner h1 {
-        font-size: 32px;
-        margin-bottom: 12px;
-      }
-
-      .banner p {
-        font-size: 16px;
-        color: #aabbdd;
-      }
+      .banner h1 { font-size: 32px; margin-bottom: 12px; }
+      .banner p { font-size: 16px; color: #aabbdd; }
 
       main {
         max-width: 700px;
@@ -85,26 +57,29 @@
       }
 
       h2 {
-        font-size: 18px;
-        color: #2c3e6b;
+        font-size: 18px; color: #2c3e6b;
         border-left: 4px solid #2c3e6b;
         padding-left: 12px;
-        margin-top: 36px;
-        margin-bottom: 12px;
+        margin-top: 36px; margin-bottom: 12px;
       }
 
-      p {
-        font-size: 15px;
-        line-height: 1.8;
-        color: #555555;
-        margin: 4px 0;
-      }
+      p { font-size: 15px; line-height: 1.8; color: #555555; margin: 4px 0; }
 
-      ul {
-        padding-left: 20px;
-        color: #555555;
-        font-size: 15px;
-        line-height: 2;
+      ul { padding-left: 20px; color: #555555; font-size: 15px; line-height: 2; }
+
+      /* 문의 버튼 */
+      .contact-btn {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 20px;
+        background-color: #2c3e6b;
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 13px;
+        border-radius: 4px;
+      }
+      .contact-btn:hover {
+        background-color: #1a2a50;
       }
 
       footer {
@@ -116,18 +91,12 @@
         line-height: 2;
       }
 
-      footer p {
-        color: #e8eef8;
-      }
+      footer p { color: #e8eef8; }
 
       /* 아코디언 */
-      .accordion {
-        margin-top: 8px;
-      }
+      .accordion { margin-top: 8px; }
 
-      .acc-item {
-        border-bottom: 1px solid #e8e0d4;
-      }
+      .acc-item { border-bottom: 1px solid #e8e0d4; }
 
       .acc-btn {
         width: 100%;
@@ -145,173 +114,24 @@
         font-weight: 700;
       }
 
-      .acc-btn:hover {
-        color: #1a2a50;
-      }
+      .acc-btn:hover { color: #1a2a50; }
 
       .acc-btn span {
         transition: transform 0.3s;
         font-size: 13px;
       }
 
-      .acc-btn.open span {
-        transform: rotate(180deg);
-      }
+      .acc-btn.open span { transform: rotate(180deg); }
 
       .acc-content {
         display: none;
         padding: 4px 0 14px 8px;
       }
 
-      .acc-content.open {
-        display: block;
-      }
-
-      /* EMO 느낌 floating button */
-
-.pray-float {
-
-  position: fixed;
-
-  right: 24px;
-  bottom: 24px;
-
-  width: 68px;
-  height: 68px;
-
-  border-radius: 50%;
-
-  background: #e58e3a;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  text-decoration: none;
-
-  box-shadow:
-    0 10px 28px rgba(0,0,0,0.16),
-    inset 0 1px 0 rgba(255,255,255,0.12);
-
-  transition: 0.25s;
-
-  z-index: 999;
-}
-
-.pray-float:hover {
-
-  transform: translateY(-3px) scale(1.04);
-
-  background: #1d2d57;
-}
-
-/* 종이비행기 */
-
-.plane-wrap {
-
-  position: relative;
-
-  width: 30px;
-  height: 30px;
-
-  transform: rotate(-18deg);
-}
-
-/* 몸체 */
-
-.plane-body {
-
-  position: absolute;
-
-  width: 0;
-  height: 0;
-
-  border-left: 24px solid #ffffff;
-
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-
-  left: 2px;
-  top: 5px;
-}
-
-/* 날개 */
-
-.plane-wing {
-
-  position: absolute;
-
-  width: 14px;
-  height: 2px;
-
-  background: rgba(255,255,255,0.7);
-
-  transform: rotate(32deg);
-
-  left: 7px;
-  top: 14px;
-
-  border-radius: 2px;
-}
-
-/* 꼬리 */
-
-.plane-tail {
-
-  position: absolute;
-
-  width: 0;
-  height: 0;
-
-  border-left: 8px solid rgba(255,255,255,0.75);
-
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-
-  left: 1px;
-  top: 13px;
-}
-
-/* 작은 반짝 */
-
-.plane-dot {
-
-  position: absolute;
-
-  width: 4px;
-  height: 4px;
-
-  background: rgba(255,255,255,0.8);
-
-  border-radius: 50%;
-
-  right: -2px;
-  top: 2px;
-}
-
-/* 모바일 */
-
-@media (max-width: 600px) {
-
-  .pray-float {
-
-    width: 62px;
-    height: 62px;
-
-    right: 16px;
-    bottom: 16px;
-  }
-
-  .plane-wrap {
-
-    transform: rotate(-18deg) scale(0.92);
-  }
-
-}
+      .acc-content.open { display: block; }
 
       /* 모바일 */
       @media (max-width: 600px) {
-
         header {
           padding: 12px 20px;
           flex-direction: column;
@@ -343,92 +163,47 @@
           font-size: 13px;
         }
 
-        .banner {
-          padding: 40px 20px;
-        }
-
-        .banner h1 {
-          font-size: 24px;
-        }
-
-        .banner p {
-          font-size: 14px;
-        }
+        .banner { padding: 40px 20px; }
+        .banner h1 { font-size: 24px; }
+        .banner p { font-size: 14px; }
 
         main {
           margin: 20px 16px;
           padding: 30px 24px;
         }
 
-        h2 {
-          font-size: 16px;
-        }
+        h2 { font-size: 16px; }
+        p { font-size: 14px; }
+        ul { font-size: 14px; }
 
-        p {
-          font-size: 14px;
-        }
-
-        ul {
-          font-size: 14px;
-        }
-
-        .acc-btn {
-          font-size: 14px;
-        }
-
-        .pray-float {
-          width: 64px;
-          height: 64px;
-          right: 16px;
-          bottom: 16px;
-        }
-
-        .pray-float .plane {
-          font-size: 20px;
-        }
-
-        .pray-float .text {
-          font-size: 9px;
-        }
-
+        .acc-btn { font-size: 14px; }
       }
-
     </style>
   </head>
 
   <body>
 
     <header>
-
       <div class="header-left">
-
         <img src="logo.svg" alt="대한예수교장로회 합동" height="50">
-
         <div class="church-title">
           필그림소망교회
           <span>Pilgrim Somang Church</span>
         </div>
-
       </div>
-
       <nav>
         <a href="index.html">예배 안내</a>
         <a href="location.html">오시는 길</a>
         <a href="contact.html">문의</a>
       </nav>
-
     </header>
 
     <div class="banner">
-
       <h1>필그림소망교회</h1>
-
       <p>예수님을 만날때 행복이 시작됩니다.</p>
-
     </div>
 
     <main>
-
       <p style="font-size: 14px; color: #666; line-height: 1.9; margin-bottom: 24px;">
         필그림소망교회는 대한예수교장로회 합동교단(총신대학교)의 용인 노회에 소속된 교회입니다.<br>
         건강한 교회와 주님의 길을 따르는 제자들이 하나님 나라를 만드는 일에 헌신하는 교회입니다.
@@ -439,21 +214,18 @@
 
       <h2>예배 안내</h2>
 
+      <!-- 예배: 기본 표시 -->
       <ul style="margin-bottom: 8px;">
         <li>주일 예배 — 오전 11:00</li>
         <li>수요 기도회 — 수요일 오후 9:00</li>
         <li>새벽기도회 — 매일 새벽 5:00</li>
       </ul>
 
+      <!-- 부서모임 / 기도·훈련: 아코디언 -->
       <div class="accordion">
 
         <div class="acc-item">
-
-          <button class="acc-btn">
-            부서 모임
-            <span>▾</span>
-          </button>
-
+          <button class="acc-btn">부서 모임 <span>▾</span></button>
           <div class="acc-content">
             <ul>
               <li>유초등부 — 주일 오후 1:00</li>
@@ -462,84 +234,38 @@
               <li>소그룹 모임 — 주일 오후 2:00</li>
             </ul>
           </div>
-
         </div>
 
         <div class="acc-item">
-
-          <button class="acc-btn">
-            기도 / 훈련
-            <span>▾</span>
-          </button>
-
+          <button class="acc-btn">기도 / 훈련 <span>▾</span></button>
           <div class="acc-content">
             <ul>
               <li>제자훈련 모임 — 금요일 오후 7:30</li>
               <li>중보기도팀 — 금요일 오후 3:30</li>
             </ul>
           </div>
-
         </div>
 
       </div>
 
       <h2>문의</h2>
       <p>TEL: (031) 286-0691</p>
-
     </main>
 
     <footer>
-
       <p>대한예수교장로회 필그림소망교회</p>
-
-      <p>
-        경기도 용인시 기흥구 농서로 10-7 |
-        TEL: (031) 286-0691
-      </p>
-
-      <p>
-        © 2025 Pilgrim Somang Church.
-        All rights reserved.
-      </p>
-
-      <p style="margin-top: 12px; font-size: 11px; color: #6688aa;">
-        Designed by harang
-      </p>
-
+      <p>경기도 용인시 기흥구 농서로 10-7 | TEL: (031) 286-0691</p>
+      <p>© 2025 Pilgrim Somang Church. All rights reserved.</p>
+      <p style="margin-top: 12px; font-size: 11px; color: #6688aa;">Designed by harang</p>
     </footer>
 
-<a href="mission.html" class="pray-float">
-
-  <div class="plane-wrap">
-
-    <div class="plane-body"></div>
-
-    <div class="plane-wing"></div>
-
-    <div class="plane-tail"></div>
-
-    <div class="plane-dot"></div>
-
-  </div>
-
-</a>
-
-    </a>
-
     <script>
-
       document.querySelectorAll('.acc-btn').forEach(btn => {
-
         btn.addEventListener('click', () => {
-
           btn.classList.toggle('open');
-
           btn.nextElementSibling.classList.toggle('open');
-
         });
-
       });
-
     </script>
 
   </body>
