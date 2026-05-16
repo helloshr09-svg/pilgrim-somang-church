@@ -83,7 +83,12 @@ canvas { display: block; cursor: crosshair; }
 <div id="msg">합이 10이 되도록 드래그하세요! 🍎</div>
 
 <script>
-const COLS=17, ROWS=10, CELL=32;
+const isMobile = window.innerWidth < 600;
+const COLS = isMobile ? 9 : 17;
+const ROWS = isMobile ? 15 : 10;
+const CELL = isMobile
+  ? Math.max(28, Math.min(42, Math.floor(window.innerWidth * 0.96 / COLS)))
+  : 32;
 const CW=COLS*CELL, CH=ROWS*CELL;
 const TOTAL=120, RADIUS=CELL/2-2.5;
 const SKEY='apple-game-best-capy';
@@ -93,6 +98,11 @@ const dpr=window.devicePixelRatio||1;
 canvas.width=CW*dpr; canvas.height=CH*dpr;
 canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
 ctx.scale(dpr,dpr);
+
+['capy-section','hdr','tbw'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.style.width=CW+'px'; el.style.maxWidth='98vw';
+});
 
 let grid, score, bestScore=0, timeLeft, gameOver, timerID;
 let isDragging=false, sx, sy, cx, cy;
