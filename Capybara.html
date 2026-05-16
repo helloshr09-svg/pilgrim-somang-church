@@ -210,7 +210,7 @@ function drawScene(sel, isValid) {
     ctx.fillStyle=dark()?'rgba(0,0,0,0.78)':'rgba(253,248,242,0.88)';
     ctx.fillRect(0,0,CW,CH);
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    const goW=Math.min(CW*0.55,220);
+    const goW=Math.min(CW*0.85,4400);
     const goH=gameOverImg.complete&&gameOverImg.naturalWidth>0
       ?goW*(gameOverImg.naturalHeight/gameOverImg.naturalWidth):goW;
     const totalH=(isNew?30:0)+goH+70;
