@@ -118,6 +118,141 @@
 
       footer p { color: #e8eef8; }
 
+      /* 이스터에그 — 개발자 화면 */
+      #dev-screen {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.88);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #dev-screen.open {
+        display: flex;
+      }
+
+      .dev-box {
+        background: #1a1a2e;
+        border-radius: 14px;
+        padding: 36px 40px;
+        max-width: 480px;
+        width: 90%;
+        color: #e8eef8;
+        text-align: center;
+        animation: devFadeIn 0.35s ease;
+      }
+
+      @keyframes devFadeIn {
+        from { opacity: 0; transform: translateY(16px) scale(0.97); }
+        to   { opacity: 1; transform: none; }
+      }
+
+      .dev-label {
+        font-size: 11px;
+        letter-spacing: 3px;
+        color: #6688aa;
+        margin-bottom: 8px;
+        font-family: monospace;
+      }
+
+      .dev-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .dev-sub {
+        font-size: 12px;
+        color: #6688aa;
+        margin-bottom: 28px;
+      }
+
+      .game-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .game-card {
+        background: #2c3e6b;
+        border-radius: 10px;
+        padding: 20px 16px;
+        text-decoration: none;
+        color: #e8eef8;
+        display: block;
+        transition: background 0.15s, transform 0.1s;
+      }
+
+      .game-card:hover {
+        background: #3a5080;
+        transform: translateY(-2px);
+      }
+
+      .game-card .game-icon {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .game-card .game-name {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .game-card .game-tag {
+        font-size: 11px;
+        color: #aabbdd;
+      }
+
+      .dev-close {
+        background: transparent;
+        border: 1px solid #3a5080;
+        color: #6688aa;
+        padding: 8px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-family: 'Noto Serif KR', serif;
+        transition: border-color 0.15s, color 0.15s;
+      }
+
+      .dev-close:hover {
+        border-color: #aabbdd;
+        color: #aabbdd;
+      }
+
+      /* 꾹 누르기 프로그레스 바 */
+      #harang-credit {
+        cursor: default;
+        user-select: none;
+        position: relative;
+        display: inline-block;
+      }
+
+      #hold-bar-wrap {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 2px;
+        display: none;
+        overflow: hidden;
+      }
+
+      #hold-bar {
+        height: 100%;
+        width: 0%;
+        background: #aabbdd;
+        border-radius: 2px;
+        transition: width 0.05s linear;
+      }
+
       /* 모바일 */
       @media (max-width: 600px) {
         header {
@@ -151,9 +286,6 @@
           font-size: 13px;
         }
 
-        .banner h1 { font-size: 24px; }
-        .banner p { font-size: 14px; }
-
         main {
           margin: 20px 16px;
           padding: 30px 24px;
@@ -161,9 +293,14 @@
 
         h2 { font-size: 16px; }
         p { font-size: 14px; }
-        ul { font-size: 14px; }
 
-        .acc-btn { font-size: 14px; }
+        .dev-box {
+          padding: 28px 24px;
+        }
+
+        .game-grid {
+          grid-template-columns: 1fr 1fr;
+        }
       }
     </style>
   </head>
@@ -217,8 +354,140 @@
       <p>대한예수교장로회 필그림소망교회</p>
       <p>경기도 용인시 기흥구 농서로 10-7 | TEL: (031) 286-0691</p>
       <p>© 2025 Pilgrim Somang Church. All rights reserved.</p>
-      <p style="margin-top: 12px; font-size: 11px; color: #6688aa;">Designed by harang</p>
+      <p style="margin-top: 12px; font-size: 11px; color: #6688aa;">
+        <span id="harang-credit">
+          Designed by harang
+          <span id="hold-bar-wrap"><span id="hold-bar"></span></span>
+        </span>
+      </p>
     </footer>
+
+
+    <!-- ───────────────────────────────────────────
+         이스터에그 — 개발자 화면 (게임 선택창)
+         게임 추가: .game-card 블록을 복사하고
+         href, 이모지, 이름, 장르만 바꾸세요
+    ─────────────────────────────────────────── -->
+    <div id="dev-screen">
+      <div class="dev-box">
+        <div class="dev-label">DEVELOPER LOUNGE</div>
+        <div class="dev-title">🎮 harang's games</div>
+        <div class="dev-sub">여기까지 올 줄 몰랐을 텐데 👀</div>
+
+        <div class="game-grid">
+
+          <!-- 게임 카드 — href를 게임 파일 경로로 바꾸세요 -->
+          <a class="game-card" href="game1.html">
+            <div class="game-icon">🧩</div>
+            <div class="game-name">게임 이름 1</div>
+            <div class="game-tag">퍼즐</div>
+          </a>
+
+          <a class="game-card" href="game2.html">
+            <div class="game-icon">⚔️</div>
+            <div class="game-name">게임 이름 2</div>
+            <div class="game-tag">액션</div>
+          </a>
+
+          <!-- 게임이 더 있으면 아래에 복사해서 추가 -->
+
+        </div>
+
+        <button class="dev-close" onclick="closeDev()">닫기</button>
+      </div>
+    </div>
+
+
+    <!-- ───────────────────────────────────────────
+         이스터에그 스크립트
+         ① h 키 5번 연속 입력
+         ② "Designed by harang" 3초 꾹 누르기
+    ─────────────────────────────────────────── -->
+    <script>
+    (function () {
+
+      /* ── 개발자 화면 열기 / 닫기 ── */
+      function openDev() {
+        document.getElementById('dev-screen').classList.add('open');
+      }
+      function closeDev() {
+        document.getElementById('dev-screen').classList.remove('open');
+      }
+      window.closeDev = closeDev;
+
+      /* ── ① 키 N번 연속 입력 ──────────────────
+         TARGET_KEY   : 감지할 키 (소문자)
+         TARGET_COUNT : 몇 번 연속으로 눌러야 하는지
+         RESET_MS     : 이 시간(ms) 안에 안 누르면 초기화
+      ──────────────────────────────────────── */
+      var TARGET_KEY   = 'h';   // ← 원하는 키로 변경
+      var TARGET_COUNT = 5;     // ← 연속 횟수 변경
+      var RESET_MS     = 1500;
+
+      var keyCount = 0, keyTimer = null;
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== TARGET_KEY) {
+          keyCount = 0;
+          return;
+        }
+        keyCount++;
+        clearTimeout(keyTimer);
+        keyTimer = setTimeout(function () { keyCount = 0; }, RESET_MS);
+        if (keyCount >= TARGET_COUNT) {
+          keyCount = 0;
+          openDev();
+        }
+      });
+
+      /* ── ② 꾹 누르기 ────────────────────────
+         HOLD_MS : 몇 ms 동안 눌러야 하는지 (3000 = 3초)
+      ──────────────────────────────────────── */
+      var HOLD_MS = 5000;
+
+      var holdTimer    = null;
+      var holdInterval = null;
+      var holdPct      = 0;
+      var barWrap      = document.getElementById('hold-bar-wrap');
+      var bar          = document.getElementById('hold-bar');
+      var credit       = document.getElementById('harang-credit');
+
+      function startHold(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        barWrap.style.display = 'block';
+        holdPct = 0;
+        bar.style.width = '0%';
+        var step = 100 / (HOLD_MS / 50);
+        holdInterval = setInterval(function () {
+          holdPct = Math.min(100, holdPct + step);
+          bar.style.width = holdPct + '%';
+          if (holdPct >= 100) {
+            cancelHold();
+            openDev();
+          }
+        }, 50);
+      }
+
+      function cancelHold() {
+        clearInterval(holdInterval);
+        holdPct = 0;
+        bar.style.width = '0%';
+        barWrap.style.display = 'none';
+      }
+
+      credit.addEventListener('mousedown',  startHold);
+      credit.addEventListener('mouseup',    cancelHold);
+      credit.addEventListener('mouseleave', cancelHold);
+      credit.addEventListener('touchstart', startHold,  { passive: false });
+      credit.addEventListener('touchend',   cancelHold);
+
+      /* ESC 키로 개발자 화면 닫기 */
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDev();
+      });
+
+    })();
+    </script>
 
   </body>
 </html>
